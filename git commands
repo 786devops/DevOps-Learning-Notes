@@ -1,0 +1,80 @@
+Central Repo: https://github.com/mgshaikdevops/aug2020.git
+==========================================================
+
+==================
+GIT CONFIGERATION:
+==================
+git config --global user.name "mgshaikdevops"
+git config --global user.email "mgshaikdevops@gmail.com"
+git config --global push.default "simple" [only when you want to work in master branch]
+git clone https://github.com/mgshaikdevops/aug2020.git 
+
+========================
+User Developer Workflow:
+========================
+git clone [source-central repo] [destination-localrepo]
+git status
+git add [file name] or add . [all files]
+git commit -m "First Commit"
+git log -1 [or 2 or 3 or etc for latest log]
+git log -num --oneline 
+git log --oneline -1 [or 2 or 3 or etc for latest log]
+git show [commit id]
+git push
+git pull
+
+git clone https://github.com/mgshaikdevops/aug2020.git
+
+=======
+Branch:
+=======
+
+git branch
+git branch [newbranch name]
+git checkout [branch name] [to switch branch]
+git merge [source branch] [destination branch]
+git cherry-pick [commit id] [this is only medging with perticular commit id]
+
+=====
+UNDO:
+=====
+
+git stash
+[creates stash, remove changes from working directory]
+
+git stash list
+[to list all stash available for the respository]
+
+git stash pop
+[reapply the changes, remove stash]
+
+git stash apply stash@{num}
+[apply a specific stash from repo]
+
+git stash clear
+[remove stash from repo]
+
+
+====
+TAGS
+====
+
+git tag -a <pattern> -m "comment" <commitid>
+Apply tag to a comment
+
+git show <pattern>
+Contents of the tag
+
+git tag
+Display list of tags available
+
+git push --tags
+Push the tags
+
+git tag -d <tag>
+Delete a tag
+
+
+
+
+
