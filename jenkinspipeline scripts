@@ -1,0 +1,385 @@
+=================  Pipeline Structure  ===================
+
+pipeline
+{
+    agent{}                     - machine - globally or every stage
+    stages
+    {
+        stage("stage1") 
+        {   
+            agent {}
+            steps {}
+        }
+        stage("stage2") 
+        {
+            agent {}
+            steps {}
+        }
+        stage("stage3")
+        {   
+            agent {}
+            steps {}
+        }
+    }
+}
+
+
+====================   1(stage1)-agent any)   =========================
+        Run Pipeline stage on group of machines using label
+=======================================================================
+
+pipeline
+{
+    agent any
+    stages 
+    {
+        stage('stage1')
+        {
+            steps { echo "Fitst Pipeline Script" }
+
+        }
+    }
+}
+
+
+==================   2(stage1,stage2- agent <name>)     ===================
+                    Run 2 stages on group of machines
+===========================================================================
+
+
+pipeline
+{
+    agent { label 'demo'}
+    stages 
+    {
+        stage('stage1')
+        {
+            steps { echo 'First stage' }
+        }
+
+        stage('stage2')
+        {
+            steps {  echo 'second stage' }
+        }
+
+    }
+}
+
+
+=======================  3  agent none stage level level   ========================
+                            Run stage level agent section
+===================================================================================
+
+pipeline
+{
+    agent none
+    stages
+    {
+        
+        stage('stage1')
+        {
+            agent {label 'Demo'}
+
+            steps { echo "First line" }
+        }
+
+        
+        stage('stage2')
+        {
+            agent any
+
+            steps { echo "Second line" }
+        }
+    }
+}
+
+======================      4 -Custom Workspace    ===========================
+                        Custom Workspace for agent
+==============================================================================
+
+pipeline
+{
+    agent none
+    stages
+    {
+        stage('stage1') 
+        {
+            agent 
+            {
+                node 
+                {
+                    label 'Demo'
+                    customWorkspace '/var/lib/jenkins/workspace/CustomWorkSpace'
+                }
+            }
+
+            steps { echo 'First stage' }
+        }
+
+        stage('stage2')
+        {
+            agent any 
+            steps {  echo "Second stage" }
+        }
+    }
+}
+
+
+=======================      5 - Directives: Environment     ===================================
+    An environment directive used in the top-level pipeline block will apply to all steps
+================================================================================================
+
+pipeline
+{
+    agent { label 'demo'}
+
+    environment { MYNAME = 'Ghouse' }
+
+    stages
+    {
+        stage('stage1')
+        {
+            steps { sh "echo 'Your name: $MYNAME'" }
+        }
+
+        stage("stage2")
+        {
+            steps { echo env.MYNAME }
+        }
+    }
+}
+
+================================    Global and Local    ============================================
+
+pipeline
+{
+    agent   { label 'Demo' }
+    environment { VARVAL = 'global' }
+
+    stages
+    {
+        stage('stage1')
+        {
+            environment { VARVAL = 'local' }
+            steps { sh "echo 'Your name:$VARVAL' " }
+        }
+
+        stage('stage2')
+        {
+            steps { echo env.VARVAL }
+        }
+    }
+}
+
+
+====================================================================================================
+                                    Directives: PARAMETERS
+====================================================================================================
+
+pipeline
+{
+    agent any
+    parameters
+    {
+        string (name:'PERSON', defaultValue: 'Mr Ghouse', description: 'who are you?')
+        
+        text (name: 'BIOGRAPHY', defaultValue: '', description:'Enter some information about the person' )
+        
+        booleanParam (name: 'TOGGLE', defaultValue: true, description:'toggle this value' )
+
+        choice (name: 'CHOICE', choices: ['one','two','three'], description: 'Pick something')
+
+        password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
+
+        file(name: 'FILE', description: 'Choose a file to upload')
+    }
+
+    stages
+    {
+        stage('Example')
+        {
+            steps
+            {
+                echo " Hello ${params.PERSON} "
+                echo " Biography: ${params.BIOGRAPHY} "
+                echo " Toggle: ${params.TOGGLE} "
+                echo " Choice: ${params.CHOICE} "
+            }
+        }
+    }
+
+
+}
+
+===================================================================================================
+                                    Directives: OPTIONS
+The options directive allows configuring pipeline-specific options from within the pipeline itself.
+Pipeline provides a number of these options.                                    
+====================================================================================================
+
+pipeline
+{
+    agent   { label 'Demo' }
+    options { buildDiscarder(logRotator(numToKeepStr: '5'))  }
+    stages
+    {
+        stage('stage1')
+        {
+            steps { echo "First Stage" }       }
+    }
+}
+
+=====================================================================================================
+     Directives:   RETRY: on failure, retry the entire pipeline the specified number of times.
+=====================================================================================================
+
+pipeline
+{
+    agent { label 'Demo' }
+    options { retry(3) }
+
+    stages
+    {
+        stage('stage1')
+        {
+            steps { sh 'exit 1' }
+        }
+    }
+}
+
+===========================================================================================================
+Directives: TIMEOUT: set a timeout periodfor the pipeline run after which jenkins should abort the pipeline
+===========================================================================================================
+
+pipeline
+{
+    agent { label'Demo' }
+    options { timeout (time:5, unit: 'SECONDS') }
+
+    stages 
+    {
+        stage('stage1')
+        {
+            steps { sh 'sleep 10' }
+        }
+    }
+}
+
+
+
+=====================================================================================================
+                                        Directives:    TIMESTAMPS
+=====================================================================================================
+
+pipeline
+{
+    agent { label'Demo' }
+    options 
+        {
+            timeout (time:5, unit: 'SECONDS')
+            timestamps()
+        }
+    stages 
+    {
+        stage('stage1')
+        {
+            steps { sh 'sleep 10' }
+        }
+    }
+}
+
+
+
+=====================================================================================================
+                                 Directives:       disableConcurrentBuilds
+=====================================================================================================
+
+pipeline
+{
+    agent { label'Demo' }
+    options 
+        {
+            timestamps()
+            disableConcurrentBuilds()
+        }
+    stages 
+    {
+        stage('stage1')
+        {
+            steps { sh 'sleep 20' }
+        }
+    }
+}
+
+
+=====================================================================================================
+                                 Directives:    disableConcurrentBuilds
+=====================================================================================================
+
+pipeline
+{
+    agent { label'Demo' }
+    options 
+        {
+            timestamps()
+            disableConcurrentBuilds()
+        }
+    stages 
+    {
+        stage('stage1')
+        {
+            steps { sh 'sleep 20' }
+        }
+    }
+}
+
+
+=====================================================================================================
+                                 Directives:    Triggers
+The triggers directive defines the automated ways in which the pipeline should ne re triggered
+The triggers currently available are cron, pollSCM and upstream
+cron: Persit artifacts and console output for the specific number of recent pipeline runs.
+=====================================================================================================
+
+pipeline
+{
+    agent { label 'Demo'}
+    triggers { cron ('* * * * *') }
+
+    stages
+    {
+        stage('stage1')
+        {
+            steps { echo 'test' }
+        }
+    }
+}
+
+=====================================================================================================
+                                 TRIGGERS:    UPSTREAM
+=====================================================================================================
+
+pipeline
+{
+    agent {label 'Demo'}
+    triggers
+        {
+            upstream ( upstreamProjects: 'Test-job1', threshold: hudson.model.Result.SUCCESS )
+        }
+
+        stages
+            {
+                stage('stage1')
+                    {
+                        steps { echo "test" }
+                    }
+            }
+}
+
+=====================================================================================================
+                                 DIRECTIVES: STEPS
+Basically steps tell jenkins what to do and serve as the basic building block.
+The steps section defines a series of one or more steps to be executed in agiven stage directive.
+GIT: It performs a clone from the specified repository, shorthand for the generic SCM step.    
+=====================================================================================================
+
