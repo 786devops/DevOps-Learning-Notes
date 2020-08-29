@@ -313,28 +313,6 @@ pipeline
 
 
 =====================================================================================================
-                                 Directives:    disableConcurrentBuilds
-=====================================================================================================
-
-pipeline
-{
-    agent { label'Demo' }
-    options 
-        {
-            timestamps()
-            disableConcurrentBuilds()
-        }
-    stages 
-    {
-        stage('stage1')
-        {
-            steps { sh 'sleep 20' }
-        }
-    }
-}
-
-
-=====================================================================================================
                                  Directives:    Triggers
 The triggers directive defines the automated ways in which the pipeline should ne re triggered
 The triggers currently available are cron, pollSCM and upstream
@@ -382,4 +360,97 @@ Basically steps tell jenkins what to do and serve as the basic building block.
 The steps section defines a series of one or more steps to be executed in agiven stage directive.
 GIT: It performs a clone from the specified repository, shorthand for the generic SCM step.    
 =====================================================================================================
+
+pipeline
+{
+    agent { label 'Demo' }
+    stages
+        {
+            stage('Clone Repo')
+                {
+                    steps
+                        {
+                            echo 'Going to checkout from Git'
+                            git branch: 'master', url: 'https://github.com/786devops/maven.git'
+                            echo 'Completed Checkout from Git'
+                        }
+                }
+        }
+}
+
+
+=====================================================================================================
+        BUILD: Triggers a new build for a given downstream job & waits for its completion
+=====================================================================================================
+
+pipeline
+{
+    agent { label 'Demo' }
+    stages 
+        {
+            stage('CI-JOB1-X') 
+                {
+                    steps { build job: 'CI-JOB1-X', wait: false }
+                }
+            stage('Stage2')
+                {
+                    steps { echo 'Testing' }
+                }
+        }
+}
+
+=======================================================================================================
+                                        mail: sending email
+=======================================================================================================
+
+pipeline
+{
+    agent { label 'Demo'}
+    stages 
+        {
+            stage('mail')
+                {
+                    steps 
+                        {
+                            mail bcc:", body: 'Hi Ghouse', cc:", from:", replyTo:", subject:'Test Mail', to:"mgshaik1@gmail.com"
+                        }
+                }
+        }
+}
+
+
+=======================================================================================================
+                                        dir: Change current directory
+        Any step inside the directory block will use this directory as current and any 
+        relative path will use it as  base path
+=======================================================================================================
+
+pipeline
+{
+    agent { label 'Demo'}
+    stages 
+        {
+            stage('stage1')
+                {
+                    steps
+                        {
+                            sh 'touch test-first'
+                            dir('/tmp/jenkins')
+                                {
+                                    sh 'touch testme1'
+                                    sh 'touch testme2'
+                                }
+                            sh 'test-last'
+                        }
+                }
+        }
+}
+
+
+=======================================================================================================
+                                       Directives: when
+The when directive allows the pipeline to determine wheather the stage should be executed 
+depending up on the given condition. The when directive must contain at least one condition.
+Environment: Execute the stage when the specified environment variable is set to the given value.
+=======================================================================================================
 

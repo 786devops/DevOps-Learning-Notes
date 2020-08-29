@@ -1,16 +1,32 @@
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 pipeline
 {
-    agent {label 'Demo'}
-    triggers
+    agent   { label 'Demo' }
+    options { buildDiscarder(logRotator(numToKeepStr: '5'))  }
+    stages
+    {
+        stage('stage1')
         {
-            upstream ( upstreamProjects: 'Test-job1', threshold: hudson.model.Result.SUCCESS )
-        }
-
-        stages
-            {
-                stage('stage1')
-                    {
-                        steps { echo "test" }
-                    }
-            }
+            steps { echo "First Stage" }       }
+    }
 }
